@@ -1,4 +1,4 @@
-# 🩸 Kansızlık (Anemi) Tanısında Gini Algoritması Kullanımı
+# 🩸 Hemoglobin Regresyon ile Anemi Tanı Destek Sistemi
 
 <div align="center">
 
@@ -16,19 +16,28 @@
 
 ## 📋 Proje Açıklaması
 
-Bu proje, kan tahlili (CBC - Complete Blood Count) verileri kullanılarak bireylerin **kansız (anemik) olup olmadığının** **Gini indeksi temelli karar ağacı** yöntemiyle sınıflandırılmasını amaçlamaktadır.
+Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek için **Linear Regression** modeli kullanır ve tahmin edilen değere göre **klinik kural tabanlı** anemi tespiti yapar.
 
-Proje, makine öğrenmesi algoritmalarının tıbbi tanı süreçlerinde nasıl kullanılabileceğini göstermek amacıyla tasarlanmıştır.
+### 🔑 Temel Özellikler
+
+| Özellik | Açıklama |
+|---------|----------|
+| **Makine Öğrenmesi** | Sadece Linear Regression (regresyon) |
+| **Anemi Tespiti** | Kural tabanlı klinik karar (ML değil) |
+| **Hedef Değişken** | Hemoglobin (g/dL) |
+| **Özellikler** | MCH, MCHC, MCV |
+
+> **Not:** Bu projede sınıflandırıcı (Decision Tree, Logistic Regression vb.) **kullanılmamaktadır**. Anemi tespiti WHO klinik eşik değerlerine dayalıdır.
 
 ---
 
 ## 🎯 Proje Hedefleri
 
-- ✅ Kan tahlili verilerinden anemi tespiti yapabilmek
-- ✅ Gini indeksi tabanlı karar ağacı algoritmasını uygulamak
-- ✅ Model performansını değerlendirmek ve yorumlamak
-- ✅ Özellik önemlerini analiz etmek
-- ✅ Tıbbi karar destek sistemi mantığını anlamak
+- ✅ Kan parametrelerinden Hemoglobin değerini regresyon ile tahmin etmek
+- ✅ Tahmin edilen Hb değerine göre klinik kuralla anemi tespiti yapmak
+- ✅ Linear Regression modelini uygulamak ve değerlendirmek
+- ✅ Regresyon metriklerini (MAE, RMSE, R²) hesaplamak
+- ✅ Basit ve anlaşılır bir tıbbi karar destek sistemi oluşturmak
 
 ---
 
@@ -39,18 +48,81 @@ Proje, makine öğrenmesi algoritmalarının tıbbi tanı süreçlerinde nasıl 
 | **Kaynak** | [Kaggle – biswaranjanrao/anemia-dataset](https://www.kaggle.com/datasets/biswaranjanrao/anemia-dataset) |
 | **Format** | CSV |
 | **Dosya** | `data/anemia.csv` |
-| **Toplam Kayıt** | 1422 hasta |
-| **Hedef Değişken** | Result (0 = Sağlıklı, 1 = Anemik) |
+| **Toplam Kayıt** | 1421 hasta |
 
-### 🔬 Özellikler (Features)
+### 🔬 Veri Seti Sütunları
 
-| Özellik | Açıklama | Birim |
-|---------|----------|-------|
-| **Gender** | Cinsiyet (0: Kadın, 1: Erkek) | Kategorik |
-| **Hemoglobin** | Kandaki hemoglobin miktarı | g/dL |
-| **MCH** | Mean Corpuscular Hemoglobin - Ortalama eritrosit hemoglobini | pg |
-| **MCHC** | Mean Corpuscular Hemoglobin Concentration - Ortalama eritrosit hemoglobin konsantrasyonu | g/dL |
-| **MCV** | Mean Corpuscular Volume - Ortalama eritrosit hacmi | fL |
+| Sütun | Açıklama | Kullanım |
+|-------|----------|----------|
+| **Gender** | Cinsiyet (0: Kadın, 1: Erkek) | Sadece klinik karar için |
+| **Hemoglobin** | Kandaki hemoglobin miktarı (g/dL) | **Hedef değişken (Target)** |
+| **MCH** | Mean Corpuscular Hemoglobin (pg) | **Özellik (Feature)** |
+| **MCHC** | Mean Corpuscular Hb Concentration (g/dL) | **Özellik (Feature)** |
+| **MCV** | Mean Corpuscular Volume (fL) | **Özellik (Feature)** |
+| **Result** | Anemi etiketi (0/1) | ❌ **Kullanılmıyor** |
+
+> **Önemli:** `Result` sütunu veri setinde mevcut ama bu projede **kullanılmamaktadır**. Anemi kararı, tahmin edilen Hemoglobin değerine ve cinsiyete göre klinik kuralla verilir.
+
+---
+
+## 🏗️ Proje Mimarisi
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     SİSTEM MİMARİSİ                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│   ┌─────────────┐    ┌─────────────────┐    ┌──────────────┐   │
+│   │  Kan        │    │  Linear         │    │  Tahmin      │   │
+│   │  Değerleri  │───▶│  Regression     │───▶│  Hemoglobin  │   │
+│   │  MCH,MCHC,  │    │  Modeli         │    │  (g/dL)      │   │
+│   │  MCV        │    │  (train.py)     │    │              │   │
+│   └─────────────┘    └─────────────────┘    └──────┬───────┘   │
+│                                                     │           │
+│                                                     ▼           │
+│                      ┌─────────────────────────────────────┐   │
+│                      │  Klinik Karar Kuralı (utils.py)     │   │
+│                      │                                     │   │
+│                      │  Erkek:  Hb < 13 g/dL → Anemi       │   │
+│                      │  Kadın:  Hb < 12 g/dL → Anemi       │   │
+│                      │  Aksi halde       → Normal          │   │
+│                      └─────────────────────────────────────┘   │
+│                                                     │           │
+│                                                     ▼           │
+│                      ┌─────────────────────────────────────┐   │
+│                      │  Sonuç: "Anemia" veya "Normal"      │   │
+│                      └─────────────────────────────────────┘   │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📁 Proje Yapısı
+
+```
+Kansizlik_Tanisinda_Regresyon/
+│
+├── 📂 data/
+│   └── 📊 anemia.csv              # Kaggle veri seti
+│
+├── 📂 model/
+│   └── 🤖 hemoglobin_model.pkl    # Eğitilmiş model (joblib)
+│
+├── 🐍 train.py                    # Model eğitim scripti
+├── 🐍 predict.py                  # Tahmin ve anemi tespiti scripti
+├── 🐍 utils.py                    # Klinik karar fonksiyonları
+│
+└── 📄 README.md                   # Bu dosya
+```
+
+### Dosya Sorumlulukları
+
+| Dosya | Görev |
+|-------|-------|
+| **train.py** | Veriyi yükler, Linear Regression modeli eğitir, model/hemoglobin_model.pkl olarak kaydeder |
+| **predict.py** | Modeli yükler, kullanıcıdan girdi alır, Hb tahmin eder, anemi durumunu belirler |
+| **utils.py** | `anemia_decision(predicted_hb, gender)` fonksiyonu - klinik kural tabanlı karar |
 
 ---
 
@@ -64,124 +136,139 @@ Proje, makine öğrenmesi algoritmalarının tıbbi tanı süreçlerinde nasıl 
 ### Bağımlılıkları Yükleme
 
 ```bash
-pip install pandas numpy matplotlib seaborn scikit-learn
+pip install pandas numpy scikit-learn joblib
 ```
 
 ---
 
-## 🚀 Çalıştırma
+## 🚀 Kullanım
+
+### 1. Modeli Eğitme
 
 ```bash
-cd Kansizlik_Tanisinda_Gini_Algoritmasi
-python src/anemia_analysis.py
+cd Kansizlik_Tanisinda_Regresyon
+python train.py
 ```
 
-Çalıştırma sonrasında `data/` klasöründe görsel çıktılar oluşturulacaktır.
-
----
-
-## 📈 Analiz Akışı & Metodoloji
-
+**Beklenen Çıktı:**
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     PROJE ANALİZ AKIŞI                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  1️⃣ VERİ YÜKLEME                                                │
-│     └── Kaggle veri setinin okunması                            │
-│                                                                 │
-│  2️⃣ VERİ ÖN İNCELEME                                            │
-│     ├── Veri seti boyutu ve değişkenlerin incelenmesi           │
-│     └── Hedef değişken dağılımının kontrolü                     │
-│                                                                 │
-│  3️⃣ ÖN İŞLEME                                                   │
-│     ├── Eksik veri kontrolü                                     │
-│     └── Kategorik değişkenlerin uygun formata getirilmesi       │
-│                                                                 │
-│  4️⃣ MODELLEME                                                   │
-│     ├── Özellik/hedef değişken ayrımı                           │
-│     ├── Train/Test bölünmesi (%70 / %30)                        │
-│     └── Gini indeksi temelli karar ağacı eğitimi                │
-│                                                                 │
-│  5️⃣ PERFORMANS DEĞERLENDİRMESİ                                  │
-│     ├── Accuracy (Doğruluk)                                     │
-│     ├── Confusion Matrix (Karışıklık Matrisi)                   │
-│     ├── Sensitivity / Recall (Duyarlılık)                       │
-│     └── Specificity (Özgüllük)                                  │
-│                                                                 │
-│  6️⃣ GÖRSELLEŞTİRME                                              │
-│     ├── Karar ağacı diyagramı                                   │
-│     ├── Özellik önemleri grafiği                                │
-│     └── Sınıf dağılımı grafiği                                  │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+==================================================
+  HEMOGLOBIN REGRESSION MODEL TRAINING
+==================================================
+
+Dataset loaded: 1421 rows
+Data validation passed.
+No missing values found.
+Features: ['MCH', 'MCHC', 'MCV']
+Target: Hemoglobin
+
+Training set: 1136 samples
+Test set: 285 samples
+
+Training Linear Regression model...
+Training complete.
+
+--------------------------------------------------
+  MODEL PERFORMANCE (Test Set)
+--------------------------------------------------
+  MAE:  1.7256 g/dL
+  RMSE: 1.9909 g/dL
+  R2:   -0.0125
+--------------------------------------------------
+
+Model saved: model\hemoglobin_model.pkl
+
+Training completed successfully!
+To make predictions, run: python predict.py
 ```
 
-### 🧮 Gini İndeksi Nedir?
+### 2. Tahmin Yapma
 
-Gini indeksi, bir veri setindeki homojenliği ölçen bir metriktir. Karar ağaçlarında dallanma kararları için kullanılır:
-
-```
-Gini = 1 - Σ(pᵢ)²
+```bash
+python predict.py
 ```
 
-- **Gini = 0:** Tamamen homojen (tek sınıf)
-- **Gini = 0.5:** Maksimum heterojenlik (dengeli dağılım)
-
----
-
-## 📁 Proje Yapısı
-
+**Örnek Kullanım:**
 ```
-Kansizlik_Tanisinda_Gini_Algoritmasi/
-│
-├── 📂 data/
-│   ├── 📊 anemia.csv              # Orijinal veri seti
-│   ├── 🖼️ confusion_matrix.png    # Karışıklık matrisi görseli
-│   ├── 🌳 karar_agaci.png         # Karar ağacı diyagramı
-│   ├── 📈 ozellik_onemleri.png    # Özellik önemleri grafiği
-│   └── 📉 sinif_dagilimi.png      # Sınıf dağılımı görseli
-│
-├── 📂 notebooks/
-│   └── 📄 README.md               # Notebook indeks dosyası
-│
-├── 📂 src/
-│   └── 🐍 anemia_analysis.py      # Ana analiz scripti
-│
-└── 📄 README.md                   # Bu dosya
+==================================================
+  HEMOGLOBIN PREDICTION & ANEMIA DIAGNOSIS
+==================================================
+
+Enter blood parameters:
+
+  MCH (pg): 25
+  MCHC (g/dL): 30
+  MCV (fL): 85
+
+  Gender (male/female): male
+
+--------------------------------------------------
+  RESULTS
+--------------------------------------------------
+  Predicted Hemoglobin: 13.41 g/dL
+  Gender: male
+  Threshold: 13.0 g/dL
+
+  Anemia Status: Normal
+--------------------------------------------------
 ```
 
 ---
 
-## � Çıktılar
+## 🔬 Teknik Detaylar
 
-Analiz çalıştırıldıktan sonra aşağıdaki görsel çıktılar oluşturulur:
+### Model Özellikleri
 
-| Dosya | Açıklama |
-|-------|----------|
-| `confusion_matrix.png` | Modelin tahmin performansını gösteren karışıklık matrisi |
-| `karar_agaci.png` | Eğitilmiş karar ağacının görsel diyagramı |
-| `ozellik_onemleri.png` | Her özelliğin model için önem derecesi |
-| `sinif_dagilimi.png` | Veri setindeki sınıf dağılımı |
+| Parametre | Değer |
+|-----------|-------|
+| **Algoritma** | Linear Regression (sklearn) |
+| **Özellikler** | MCH, MCHC, MCV |
+| **Hedef** | Hemoglobin |
+| **Train/Test Oranı** | 80% / 20% |
+| **Random State** | 42 |
+| **Ölçeklendirme** | Yok (StandardScaler kullanılmıyor) |
+| **Kaydetme Formatı** | joblib (.pkl) |
 
----
-
-## 🔍 Performans Metrikleri
+### Regresyon Metrikleri
 
 | Metrik | Açıklama |
 |--------|----------|
-| **Accuracy** | Doğru tahminlerin toplam tahminlere oranı |
-| **Sensitivity (Recall)** | Gerçek pozitiflerin doğru tespit oranı |
-| **Specificity** | Gerçek negatiflerin doğru tespit oranı |
-| **Precision** | Pozitif tahminlerin doğruluk oranı |
+| **MAE** | Mean Absolute Error - Ortalama mutlak hata |
+| **RMSE** | Root Mean Squared Error - Kök ortalama kare hata |
+| **R²** | Coefficient of Determination - Belirleme katsayısı |
+
+### Klinik Karar Kuralları (WHO Standartları)
+
+| Cinsiyet | Eşik Değeri | Karar |
+|----------|-------------|-------|
+| Erkek (male) | Hb < 13 g/dL | Anemia |
+| Erkek (male) | Hb ≥ 13 g/dL | Normal |
+| Kadın (female) | Hb < 12 g/dL | Anemia |
+| Kadın (female) | Hb ≥ 12 g/dL | Normal |
 
 ---
 
-## ⚠️ Önemli Uyarı
+## 📈 Girdi Değer Aralıkları
 
-> **Bu proje eğitim amaçlı olup karar destek sistemi niteliğindedir.**
+`predict.py` aşağıdaki aralıklar için uyarı verir:
+
+| Parametre | Normal Aralık | Birim |
+|-----------|---------------|-------|
+| MCH | 15 - 40 | pg |
+| MCHC | 25 - 40 | g/dL |
+| MCV | 60 - 120 | fL |
+
+---
+
+## ⚠️ Önemli Uyarılar
+
+> **1. Model Performansı Hakkında**
 > 
-> Gerçek klinik tanı süreçlerinde tek başına kullanılmamalıdır. Anemi tanısı, bu modelin çıktılarına ek olarak:
+> R² değerinin düşük olması (≈ 0), mevcut özelliklerin (MCH, MCHC, MCV) tek başına Hemoglobin'i tahmin etmek için yeterli olmadığını gösterir. Gerçek uygulamalarda RBC, RDW gibi ek özellikler gerekebilir.
+
+> **2. Klinik Kullanım Hakkında**
+> 
+> Bu proje **eğitim amaçlıdır** ve gerçek klinik ortamda tek başına kullanılmamalıdır. Anemi tanısı:
 > - Kapsamlı laboratuvar testleri
 > - Fiziksel muayene
 > - Hasta öyküsü
@@ -189,17 +276,60 @@ Analiz çalıştırıldıktan sonra aşağıdaki görsel çıktılar oluşturulu
 > 
 > gerektirmektedir.
 
+> **3. Tasarım Kısıtlamaları**
+> 
+> - Bu projede **sınıflandırıcı kullanılmamaktadır** (Decision Tree, Logistic Regression vb. yok)
+> - Accuracy, confusion matrix, precision, recall gibi **sınıflandırma metrikleri kullanılmamaktadır**
+> - Veri setindeki `Result` sütunu **kullanılmamaktadır**
+
+---
+
+## 🔄 Proje Akışı
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                      VERİ AKIŞI                              │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  1️⃣  train.py                                                │
+│      │                                                       │
+│      ├── data/anemia.csv yükle                               │
+│      ├── Eksik veri kontrolü                                 │
+│      ├── X = [MCH, MCHC, MCV], y = Hemoglobin                │
+│      ├── Train/Test split (80/20)                            │
+│      ├── LinearRegression().fit(X_train, y_train)            │
+│      ├── MAE, RMSE, R² hesapla                               │
+│      └── model/hemoglobin_model.pkl kaydet                   │
+│                                                              │
+│  2️⃣  predict.py                                              │
+│      │                                                       │
+│      ├── model/hemoglobin_model.pkl yükle                    │
+│      ├── Kullanıcıdan MCH, MCHC, MCV, gender al              │
+│      ├── model.predict([MCH, MCHC, MCV]) → predicted_hb      │
+│      ├── anemia_decision(predicted_hb, gender) çağır         │
+│      └── Sonucu ekrana yazdır                                │
+│                                                              │
+│  3️⃣  utils.py                                                │
+│      │                                                       │
+│      └── anemia_decision(predicted_hb, gender):              │
+│          • male & Hb < 13  → "Anemia"                        │
+│          • female & Hb < 12 → "Anemia"                       │
+│          • else            → "Normal"                        │
+│                                                              │
+└──────────────────────────────────────────────────────────────┘
+```
+
 ---
 
 ## 📚 Kaynaklar
 
-- [Scikit-learn Decision Trees Documentation](https://scikit-learn.org/stable/modules/tree.html)
+- [Scikit-learn Linear Regression Documentation](https://scikit-learn.org/stable/modules/linear_model.html)
 - [Kaggle Anemia Dataset](https://www.kaggle.com/datasets/biswaranjanrao/anemia-dataset)
-- [Gini Index - Wikipedia](https://en.wikipedia.org/wiki/Gini_coefficient)
+- [WHO Hemoglobin Thresholds for Anemia](https://www.who.int/vmnis/indicators/haemoglobin.pdf)
 
 ---
 
-## �📝 Lisans
+## 📝 Lisans
 
 Bu proje **eğitim amaçlı** hazırlanmıştır ve akademik kullanım için serbesttir.
 
