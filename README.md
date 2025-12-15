@@ -24,8 +24,8 @@ Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek i�
 |---------|----------|
 | **Makine Öğrenmesi** | Sadece Linear Regression (regresyon) |
 | **Anemi Tespiti** | Kural tabanlı klinik karar (ML değil) |
-| **Hedef Değişken** | Hemoglobin (g/dL) |
-| **Özellikler** | MCH, MCHC, MCV |
+| **Hedef Değişken** | Hb - Hemoglobin (g/dL) |
+| **Özellikler** | RBC, MCV, MCH, MCHC |
 
 > **Not:** Bu projede sınıflandırıcı (Decision Tree, Logistic Regression vb.) **kullanılmamaktadır**. Anemi tespiti WHO klinik eşik değerlerine dayalıdır.
 
@@ -45,23 +45,38 @@ Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek i�
 
 | Bilgi | Değer |
 |-------|-------|
-| **Kaynak** | [Kaggle – biswaranjanrao/anemia-dataset](https://www.kaggle.com/datasets/biswaranjanrao/anemia-dataset) |
-| **Format** | CSV |
-| **Dosya** | `data/anemia.csv` |
-| **Toplam Kayıt** | 1421 hasta |
+| **Kaynak** | Anemia Dataset (Excel) |
+| **Format** | CSV (Excel'den dönüştürülmüş) |
+| **Dosya** | `data/anemia_new.csv` |
+| **Toplam Kayıt** | 1000 hasta |
 
 ### 🔬 Veri Seti Sütunları
 
 | Sütun | Açıklama | Kullanım |
 |-------|----------|----------|
-| **Gender** | Cinsiyet (0: Kadın, 1: Erkek) | Sadece klinik karar için |
-| **Hemoglobin** | Kandaki hemoglobin miktarı (g/dL) | **Hedef değişken (Target)** |
+| **Gender** | Cinsiyet (m: Erkek, f: Kadın) | Sadece klinik karar için |
+| **Age** | Yaş | Kullanılmıyor |
+| **Hb** | Hemoglobin miktarı (g/dL) | **Hedef değişken (Target)** |
+| **RBC** | Red Blood Cell - Kırmızı kan hücresi sayısı | **Özellik (Feature)** ⭐ |
+| **PCV** | Packed Cell Volume | Kullanılmıyor |
+| **MCV** | Mean Corpuscular Volume (fL) | **Özellik (Feature)** |
 | **MCH** | Mean Corpuscular Hemoglobin (pg) | **Özellik (Feature)** |
 | **MCHC** | Mean Corpuscular Hb Concentration (g/dL) | **Özellik (Feature)** |
-| **MCV** | Mean Corpuscular Volume (fL) | **Özellik (Feature)** |
-| **Result** | Anemi etiketi (0/1) | ❌ **Kullanılmıyor** |
+| **Decision_Class** | Anemi etiketi (0/1) | ❌ **Kullanılmıyor** |
 
-> **Önemli:** `Result` sütunu veri setinde mevcut ama bu projede **kullanılmamaktadır**. Anemi kararı, tahmin edilen Hemoglobin değerine ve cinsiyete göre klinik kuralla verilir.
+> **Önemli:** `Decision_Class` sütunu veri setinde mevcut ama bu projede **kullanılmamaktadır**. Anemi kararı, tahmin edilen Hemoglobin değerine ve cinsiyete göre klinik kuralla verilir.
+
+---
+
+## 📈 Model Performansı
+
+| Metrik | Değer | Açıklama |
+|--------|-------|----------|
+| **MAE** | 0.47 g/dL | Ortalama mutlak hata |
+| **RMSE** | ~0.55 g/dL | Kök ortalama kare hata |
+| **R²** | **0.79** | Belirleme katsayısı (%79 açıklama gücü) |
+
+> 💡 **RBC (Kırmızı Kan Hücresi)** özelliğinin eklenmesi model performansını önemli ölçüde artırmıştır!
 
 ---
 
@@ -75,17 +90,17 @@ Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek i�
 │   ┌─────────────┐    ┌─────────────────┐    ┌──────────────┐   │
 │   │  Kan        │    │  Linear         │    │  Tahmin      │   │
 │   │  Değerleri  │───▶│  Regression     │───▶│  Hemoglobin  │   │
-│   │  MCH,MCHC,  │    │  Modeli         │    │  (g/dL)      │   │
-│   │  MCV        │    │  (train.py)     │    │              │   │
+│   │  RBC,MCV,   │    │  Modeli         │    │  (g/dL)      │   │
+│   │  MCH,MCHC   │    │  (train.py)     │    │              │   │
 │   └─────────────┘    └─────────────────┘    └──────┬───────┘   │
 │                                                     │           │
 │                                                     ▼           │
 │                      ┌─────────────────────────────────────┐   │
 │                      │  Klinik Karar Kuralı (utils.py)     │   │
 │                      │                                     │   │
-│                      │  Erkek:  Hb < 13 g/dL → Anemi       │   │
-│                      │  Kadın:  Hb < 12 g/dL → Anemi       │   │
-│                      │  Aksi halde       → Normal          │   │
+│                      │  Erkek (m):  Hb < 13 g/dL → Anemi   │   │
+│                      │  Kadın (f):  Hb < 12 g/dL → Anemi   │   │
+│                      │  Aksi halde          → Normal       │   │
 │                      └─────────────────────────────────────┘   │
 │                                                     │           │
 │                                                     ▼           │
@@ -104,7 +119,7 @@ Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek i�
 Kansizlik_Tanisinda_Regresyon/
 │
 ├── 📂 data/
-│   └── 📊 anemia.csv              # Kaggle veri seti
+│   └── 📊 anemia_new.csv          # Veri seti (1000 kayıt)
 │
 ├── 📂 model/
 │   └── 🤖 hemoglobin_model.pkl    # Eğitilmiş model (joblib)
@@ -120,7 +135,7 @@ Kansizlik_Tanisinda_Regresyon/
 
 | Dosya | Görev |
 |-------|-------|
-| **train.py** | Veriyi yükler, Linear Regression modeli eğitir, model/hemoglobin_model.pkl olarak kaydeder |
+| **train.py** | Veriyi yükler, Linear Regression modeli eğitir, model kaydeder |
 | **predict.py** | Modeli yükler, kullanıcıdan girdi alır, Hb tahmin eder, anemi durumunu belirler |
 | **utils.py** | `anemia_decision(predicted_hb, gender)` fonksiyonu - klinik kural tabanlı karar |
 
@@ -152,29 +167,29 @@ python train.py
 
 **Beklenen Çıktı:**
 ```
-==================================================
+============================================================
   HEMOGLOBIN REGRESSION MODEL TRAINING
-==================================================
+============================================================
 
-Dataset loaded: 1421 rows
+Dataset loaded: 1000 rows
 Data validation passed.
 No missing values found.
-Features: ['MCH', 'MCHC', 'MCV']
-Target: Hemoglobin
+Features: ['RBC', 'MCV', 'MCH', 'MCHC']
+Target: Hb
 
-Training set: 1136 samples
-Test set: 285 samples
+Training set: 800 samples
+Test set: 200 samples
 
 Training Linear Regression model...
 Training complete.
 
---------------------------------------------------
+------------------------------------------------------------
   MODEL PERFORMANCE (Test Set)
---------------------------------------------------
-  MAE:  1.7256 g/dL
-  RMSE: 1.9909 g/dL
-  R2:   -0.0125
---------------------------------------------------
+------------------------------------------------------------
+  MAE:  0.4724 g/dL
+  RMSE: 0.5512 g/dL
+  R2:   0.7888
+------------------------------------------------------------
 
 Model saved: model\hemoglobin_model.pkl
 
@@ -190,27 +205,29 @@ python predict.py
 
 **Örnek Kullanım:**
 ```
-==================================================
+============================================================
   HEMOGLOBIN PREDICTION & ANEMIA DIAGNOSIS
-==================================================
+============================================================
 
 Enter blood parameters:
 
-  MCH (pg): 25
-  MCHC (g/dL): 30
-  MCV (fL): 85
+  RBC (million cells/mcL): 4.5
+  MCV (fL): 80
+  MCH (pg): 27
+  MCHC (g/dL): 33
 
-  Gender (male/female): male
+  Gender (m/f or male/female): f
 
---------------------------------------------------
+------------------------------------------------------------
   RESULTS
---------------------------------------------------
-  Predicted Hemoglobin: 13.41 g/dL
-  Gender: male
-  Threshold: 13.0 g/dL
+------------------------------------------------------------
+  Predicted Hemoglobin: 11.93 g/dL
+  Gender: female
+  Threshold: 12.0 g/dL
 
-  Anemia Status: Normal
---------------------------------------------------
+  Anemia Status: ** Anemia **
+  (Hemoglobin is below 12.0 g/dL for female)
+------------------------------------------------------------
 ```
 
 ---
@@ -222,8 +239,8 @@ Enter blood parameters:
 | Parametre | Değer |
 |-----------|-------|
 | **Algoritma** | Linear Regression (sklearn) |
-| **Özellikler** | MCH, MCHC, MCV |
-| **Hedef** | Hemoglobin |
+| **Özellikler** | RBC, MCV, MCH, MCHC |
+| **Hedef** | Hb (Hemoglobin) |
 | **Train/Test Oranı** | 80% / 20% |
 | **Random State** | 42 |
 | **Ölçeklendirme** | Yok (StandardScaler kullanılmıyor) |
@@ -241,10 +258,10 @@ Enter blood parameters:
 
 | Cinsiyet | Eşik Değeri | Karar |
 |----------|-------------|-------|
-| Erkek (male) | Hb < 13 g/dL | Anemia |
-| Erkek (male) | Hb ≥ 13 g/dL | Normal |
-| Kadın (female) | Hb < 12 g/dL | Anemia |
-| Kadın (female) | Hb ≥ 12 g/dL | Normal |
+| Erkek (m/male) | Hb < 13 g/dL | Anemia |
+| Erkek (m/male) | Hb ≥ 13 g/dL | Normal |
+| Kadın (f/female) | Hb < 12 g/dL | Anemia |
+| Kadın (f/female) | Hb ≥ 12 g/dL | Normal |
 
 ---
 
@@ -254,19 +271,16 @@ Enter blood parameters:
 
 | Parametre | Normal Aralık | Birim |
 |-----------|---------------|-------|
+| RBC | 2.0 - 7.0 | million cells/mcL |
+| MCV | 60 - 120 | fL |
 | MCH | 15 - 40 | pg |
 | MCHC | 25 - 40 | g/dL |
-| MCV | 60 - 120 | fL |
 
 ---
 
 ## ⚠️ Önemli Uyarılar
 
-> **1. Model Performansı Hakkında**
-> 
-> R² değerinin düşük olması (≈ 0), mevcut özelliklerin (MCH, MCHC, MCV) tek başına Hemoglobin'i tahmin etmek için yeterli olmadığını gösterir. Gerçek uygulamalarda RBC, RDW gibi ek özellikler gerekebilir.
-
-> **2. Klinik Kullanım Hakkında**
+> **1. Klinik Kullanım Hakkında**
 > 
 > Bu proje **eğitim amaçlıdır** ve gerçek klinik ortamda tek başına kullanılmamalıdır. Anemi tanısı:
 > - Kapsamlı laboratuvar testleri
@@ -276,11 +290,11 @@ Enter blood parameters:
 > 
 > gerektirmektedir.
 
-> **3. Tasarım Kısıtlamaları**
+> **2. Tasarım Kısıtlamaları**
 > 
 > - Bu projede **sınıflandırıcı kullanılmamaktadır** (Decision Tree, Logistic Regression vb. yok)
 > - Accuracy, confusion matrix, precision, recall gibi **sınıflandırma metrikleri kullanılmamaktadır**
-> - Veri setindeki `Result` sütunu **kullanılmamaktadır**
+> - Veri setindeki `Decision_Class` sütunu **kullanılmamaktadır**
 
 ---
 
@@ -293,9 +307,9 @@ Enter blood parameters:
 │                                                              │
 │  1️⃣  train.py                                                │
 │      │                                                       │
-│      ├── data/anemia.csv yükle                               │
+│      ├── data/anemia_new.csv yükle                           │
 │      ├── Eksik veri kontrolü                                 │
-│      ├── X = [MCH, MCHC, MCV], y = Hemoglobin                │
+│      ├── X = [RBC, MCV, MCH, MCHC], y = Hb                   │
 │      ├── Train/Test split (80/20)                            │
 │      ├── LinearRegression().fit(X_train, y_train)            │
 │      ├── MAE, RMSE, R² hesapla                               │
@@ -304,17 +318,17 @@ Enter blood parameters:
 │  2️⃣  predict.py                                              │
 │      │                                                       │
 │      ├── model/hemoglobin_model.pkl yükle                    │
-│      ├── Kullanıcıdan MCH, MCHC, MCV, gender al              │
-│      ├── model.predict([MCH, MCHC, MCV]) → predicted_hb      │
+│      ├── Kullanıcıdan RBC, MCV, MCH, MCHC, gender al         │
+│      ├── model.predict([RBC, MCV, MCH, MCHC]) → predicted_hb │
 │      ├── anemia_decision(predicted_hb, gender) çağır         │
 │      └── Sonucu ekrana yazdır                                │
 │                                                              │
 │  3️⃣  utils.py                                                │
 │      │                                                       │
 │      └── anemia_decision(predicted_hb, gender):              │
-│          • male & Hb < 13  → "Anemia"                        │
-│          • female & Hb < 12 → "Anemia"                       │
-│          • else            → "Normal"                        │
+│          • male (m) & Hb < 13  → "Anemia"                    │
+│          • female (f) & Hb < 12 → "Anemia"                   │
+│          • else                → "Normal"                    │
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -324,7 +338,6 @@ Enter blood parameters:
 ## 📚 Kaynaklar
 
 - [Scikit-learn Linear Regression Documentation](https://scikit-learn.org/stable/modules/linear_model.html)
-- [Kaggle Anemia Dataset](https://www.kaggle.com/datasets/biswaranjanrao/anemia-dataset)
 - [WHO Hemoglobin Thresholds for Anemia](https://www.who.int/vmnis/indicators/haemoglobin.pdf)
 
 ---

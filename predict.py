@@ -12,7 +12,7 @@ Usage:
 
 import os
 import joblib
-from utils import anemia_decision, get_threshold
+from utils import anemia_decision, get_threshold, normalize_gender
 
 
 # Constants (must match train.py)
@@ -21,9 +21,10 @@ MODEL_FILENAME = 'hemoglobin_model.pkl'
 
 # Valid ranges for blood parameters (for input validation)
 VALID_RANGES = {
+    'RBC': (2.0, 7.0),     # million cells/mcL
+    'MCV': (60.0, 120.0),  # fL (femtoliters)
     'MCH': (15.0, 40.0),   # pg (picograms)
-    'MCHC': (25.0, 40.0),  # g/dL
-    'MCV': (60.0, 120.0)   # fL (femtoliters)
+    'MCHC': (25.0, 40.0)   # g/dL
 }
 
 
@@ -77,48 +78,54 @@ def get_user_input():
     """
     Get blood parameters and gender from user via console.
     
-    Features collected: MCH, MCHC, MCV
-    Gender: "male" or "female" (string)
+    Features collected: RBC, MCV, MCH, MCHC
+    Gender: "male", "female", "m", or "f"
     
     Returns:
         tuple: (features_dict, gender_str)
     """
     print()
-    print("=" * 50)
+    print("=" * 60)
     print("  HEMOGLOBIN PREDICTION & ANEMIA DIAGNOSIS")
-    print("=" * 50)
+    print("=" * 60)
     print()
     print("Enter blood parameters:")
     print()
     
     # Collect blood parameters one by one
     try:
+        rbc = float(input("  RBC (million cells/mcL): "))
+        validate_input('RBC', rbc, VALID_RANGES['RBC'])
+        
+        mcv = float(input("  MCV (fL): "))
+        validate_input('MCV', mcv, VALID_RANGES['MCV'])
+        
         mch = float(input("  MCH (pg): "))
         validate_input('MCH', mch, VALID_RANGES['MCH'])
         
         mchc = float(input("  MCHC (g/dL): "))
         validate_input('MCHC', mchc, VALID_RANGES['MCHC'])
         
-        mcv = float(input("  MCV (fL): "))
-        validate_input('MCV', mcv, VALID_RANGES['MCV'])
-        
     except ValueError as e:
         raise ValueError(f"Invalid numeric input: {e}")
     
     # Collect gender (for clinical decision only, NOT for model)
     print()
-    gender = input("  Gender (male/female): ").strip().lower()
+    gender_input = input("  Gender (m/f or male/female): ").strip().lower()
     
-    if gender not in ["male", "female"]:
+    try:
+        gender = normalize_gender(gender_input)
+    except ValueError:
         raise ValueError(
-            f"Invalid gender: '{gender}'. "
-            "Please enter 'male' or 'female'."
+            f"Invalid gender: '{gender_input}'. "
+            "Please enter 'male', 'female', 'm', or 'f'."
         )
     
     features = {
+        'RBC': rbc,
+        'MCV': mcv,
         'MCH': mch,
-        'MCHC': mchc,
-        'MCV': mcv
+        'MCHC': mchc
     }
     
     return features, gender
@@ -130,7 +137,7 @@ def predict_hemoglobin(model_data, features):
     
     Args:
         model_data (dict): Loaded model data
-        features (dict): Blood parameters {MCH, MCHC, MCV}
+        features (dict): Blood parameters {RBC, MCV, MCH, MCHC}
     
     Returns:
         float: Predicted Hemoglobin value (g/dL)
@@ -152,9 +159,9 @@ def display_results(predicted_hb, gender, status):
     threshold = get_threshold(gender)
     
     print()
-    print("-" * 50)
+    print("-" * 60)
     print("  RESULTS")
-    print("-" * 50)
+    print("-" * 60)
     print(f"  Predicted Hemoglobin: {predicted_hb:.2f} g/dL")
     print(f"  Gender: {gender}")
     print(f"  Threshold: {threshold:.1f} g/dL")
@@ -166,7 +173,7 @@ def display_results(predicted_hb, gender, status):
     else:
         print(f"  Anemia Status: {status}")
     
-    print("-" * 50)
+    print("-" * 60)
     print()
 
 

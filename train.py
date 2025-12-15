@@ -1,11 +1,13 @@
 """
 Hemoglobin Regression Model Training
 
-This script trains a Linear Regression model to predict Hemoglobin
+This script trains a Linear Regression model to predict Hemoglobin (Hb)
 from blood parameters and saves it using joblib.
 
-Features used: MCH, MCHC, MCV
-Target: Hemoglobin
+Features used: RBC, MCV, MCH, MCHC
+Target: Hb (Hemoglobin)
+
+Dataset: data/anemia_new.csv
 
 Usage:
     python train.py
@@ -21,8 +23,9 @@ import joblib
 
 
 # Constants
-FEATURE_COLUMNS = ['MCH', 'MCHC', 'MCV']
-TARGET_COLUMN = 'Hemoglobin'
+DATA_FILE = 'data/anemia_new.csv'
+FEATURE_COLUMNS = ['RBC', 'MCV', 'MCH', 'MCHC']
+TARGET_COLUMN = 'Hb'
 MODEL_FILENAME = 'hemoglobin_model.pkl'
 TEST_SIZE = 0.2
 RANDOM_STATE = 42
@@ -74,8 +77,8 @@ def prepare_features(df):
     """
     Prepare features and target variable.
     
-    Features: MCH, MCHC, MCV (blood parameters)
-    Target: Hemoglobin
+    Features: RBC, MCV, MCH, MCHC (blood parameters)
+    Target: Hb (Hemoglobin)
     
     Note: Gender is NOT used as a feature.
           It is only used for clinical decision logic.
@@ -143,14 +146,13 @@ def save_model(model, model_dir='model'):
 def main():
     """Main training pipeline."""
     print()
-    print("=" * 50)
+    print("=" * 60)
     print("  HEMOGLOBIN REGRESSION MODEL TRAINING")
-    print("=" * 50)
+    print("=" * 60)
     print()
     
     # 1. Load data
-    data_path = os.path.join('data', 'anemia.csv')
-    df = load_data(data_path)
+    df = load_data(DATA_FILE)
     
     # 2. Validate data
     validate_data(df)
@@ -183,13 +185,13 @@ def main():
     metrics = evaluate_model(model, X_test, y_test)
     
     print()
-    print("-" * 50)
+    print("-" * 60)
     print("  MODEL PERFORMANCE (Test Set)")
-    print("-" * 50)
+    print("-" * 60)
     print(f"  MAE:  {metrics['MAE']:.4f} g/dL")
     print(f"  RMSE: {metrics['RMSE']:.4f} g/dL")
     print(f"  R2:   {metrics['R2']:.4f}")
-    print("-" * 50)
+    print("-" * 60)
     
     # 8. Save model
     print()
