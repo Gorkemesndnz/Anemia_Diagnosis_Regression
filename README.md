@@ -3,6 +3,7 @@
 <div align="center">
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)
+![Streamlit](https://img.shields.io/badge/Streamlit-1.0+-FF4B4B?logo=streamlit&logoColor=white)
 ![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.0+-orange?logo=scikit-learn&logoColor=white)
 ![License](https://img.shields.io/badge/Lisans-Eğitim%20Amaçlı-green)
 
@@ -14,73 +15,190 @@
 
 ---
 
-## 📋 Proje Açıklaması
+## 📋 İçindekiler
 
-Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek için **Linear Regression** modeli kullanır ve tahmin edilen değere göre **klinik kural tabanlı** anemi tespiti yapar.
+1. [Proje Hakkında](#-proje-hakkında)
+2. [Özellikler](#-özellikler)
+3. [Kurulum](#-kurulum)
+4. [Kullanım](#-kullanım)
+5. [Proje Yapısı](#-proje-yapısı)
+6. [Teknik Detaylar](#-teknik-detaylar)
+7. [Veri Seti](#-veri-seti)
+8. [Model Performansı](#-model-performansı)
+9. [Ekran Görüntüleri](#-ekran-görüntüleri)
+10. [Önemli Uyarılar](#-önemli-uyarılar)
 
-### 🔑 Temel Özellikler
+---
+
+## 🎯 Proje Hakkında
+
+Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek için **Linear Regression** modeli kullanır ve tahmin edilen değere göre **WHO klinik kurallarına** dayalı anemi tespiti yapar.
+
+### Temel Özellikler
 
 | Özellik | Açıklama |
 |---------|----------|
-| **Makine Öğrenmesi** | Sadece Linear Regression (regresyon) |
-| **Anemi Tespiti** | Kural tabanlı klinik karar (ML değil) |
+| **Makine Öğrenmesi** | Linear Regression (regresyon modeli) |
+| **Anemi Tespiti** | WHO eşik değerlerine dayalı kural tabanlı karar |
+| **Arayüz** | Streamlit web uygulaması + Konsol |
 | **Hedef Değişken** | Hb - Hemoglobin (g/dL) |
 | **Özellikler** | RBC, MCV, MCH, MCHC |
 
-> **Not:** Bu projede sınıflandırıcı (Decision Tree, Logistic Regression vb.) **kullanılmamaktadır**. Anemi tespiti WHO klinik eşik değerlerine dayalıdır.
+> **⚠️ Önemli:** Bu projede sınıflandırıcı (Decision Tree, Logistic Regression vb.) **kullanılmamaktadır**. Anemi tespiti WHO klinik eşik değerlerine dayalıdır.
 
 ---
 
-## 🎯 Proje Hedefleri
+## ✨ Özellikler
 
-- ✅ Kan parametrelerinden Hemoglobin değerini regresyon ile tahmin etmek
-- ✅ Tahmin edilen Hb değerine göre klinik kuralla anemi tespiti yapmak
-- ✅ Linear Regression modelini uygulamak ve değerlendirmek
-- ✅ Regresyon metriklerini (MAE, RMSE, R²) hesaplamak
-- ✅ Basit ve anlaşılır bir tıbbi karar destek sistemi oluşturmak
+### 🖥️ Streamlit Web Arayüzü
+- Modern ve şık tasarım
+- Animasyonlu gradient arka plan
+- Glassmorphism cam efekti
+- Mobil uyumlu responsive tasarım
+
+### 📊 Tahmin ve Analiz
+- Hemoglobin değeri tahmini
+- Anemi durumu tespiti
+- Güven skoru hesaplama
+- Benzer vaka analizi
+
+### 📈 Yüzde Tabanlı Metrikler
+- **Confidence:** Tahmin güvenilirlik yüzdesi
+- **Within ±1 g/dL:** Benzer vakaların %'si
+- **Within ±2 g/dL:** Benzer vakaların %'si
+- **Match Rate:** Veri setindeki benzer vaka oranı
 
 ---
 
-## 📊 Veri Seti
+## 🛠 Kurulum
 
-| Bilgi | Değer |
+### Gereksinimler
+
+- **Python:** 3.8 veya üzeri
+- **İşletim Sistemi:** Windows 10/11 (PowerShell)
+- **RAM:** Minimum 4 GB
+
+### Adım 1: Projeyi İndirin
+
+```powershell
+# Git ile klonlama (eğer Git kuruluysa)
+git clone <repository-url>
+cd Kansizlik_Tanisinda_Regresyon
+
+# Veya ZIP dosyasını indirip çıkarın
+```
+
+### Adım 2: Python Bağımlılıklarını Yükleyin
+
+PowerShell'i **Yönetici olarak** açın ve aşağıdaki komutları çalıştırın:
+
+```powershell
+# Proje dizinine gidin
+cd C:\Kansizlik_Tanisinda_Regresyon
+
+# Gerekli paketleri yükleyin
+pip install pandas numpy scikit-learn joblib streamlit openpyxl
+```
+
+### Tüm Bağımlılıklar
+
+| Paket | Sürüm | Açıklama |
+|-------|-------|----------|
+| `pandas` | ≥1.3.0 | Veri işleme |
+| `numpy` | ≥1.20.0 | Sayısal hesaplamalar |
+| `scikit-learn` | ≥1.0.0 | Machine Learning |
+| `joblib` | ≥1.0.0 | Model kaydetme/yükleme |
+| `streamlit` | ≥1.0.0 | Web arayüzü |
+| `openpyxl` | ≥3.0.0 | Excel dosyası okuma |
+
+---
+
+## 🚀 Kullanım
+
+### Yöntem 1: Streamlit Web Arayüzü (Önerilen)
+
+```powershell
+# Proje dizinine gidin
+cd C:\Kansizlik_Tanisinda_Regresyon
+
+# Modeli eğitin (ilk kez)
+python train.py
+
+# Web arayüzünü başlatın
+streamlit run app.py
+```
+
+Tarayıcınızda otomatik olarak açılacaktır: **http://localhost:8501**
+
+### Yöntem 2: Konsol Arayüzü
+
+```powershell
+# Proje dizinine gidin
+cd C:\Kansizlik_Tanisinda_Regresyon
+
+# Modeli eğitin (ilk kez)
+python train.py
+
+# Tahmin yapın
+python predict.py
+```
+
+---
+
+## 📁 Proje Yapısı
+
+```
+Kansizlik_Tanisinda_Regresyon/
+│
+├── 📂 data/
+│   └── 📊 anemia_new.csv          # Veri seti (1000 kayıt)
+│
+├── 📂 model/
+│   └── 🤖 hemoglobin_model.pkl    # Eğitilmiş model (joblib)
+│
+├── 🐍 train.py                    # Model eğitim scripti
+├── 🐍 predict.py                  # Konsol tahmin scripti
+├── 🐍 utils.py                    # Klinik karar fonksiyonları
+├── 🐍 app.py                      # Streamlit web arayüzü
+│
+└── 📄 README.md                   # Bu dosya
+```
+
+### Dosya Açıklamaları
+
+| Dosya | Görev |
 |-------|-------|
-| **Kaynak** | Anemia Dataset (Excel) |
-| **Format** | CSV (Excel'den dönüştürülmüş) |
-| **Dosya** | `data/anemia_new.csv` |
-| **Toplam Kayıt** | 1000 hasta |
-
-### 🔬 Veri Seti Sütunları
-
-| Sütun | Açıklama | Kullanım |
-|-------|----------|----------|
-| **Gender** | Cinsiyet (m: Erkek, f: Kadın) | Sadece klinik karar için |
-| **Age** | Yaş | Kullanılmıyor |
-| **Hb** | Hemoglobin miktarı (g/dL) | **Hedef değişken (Target)** |
-| **RBC** | Red Blood Cell - Kırmızı kan hücresi sayısı | **Özellik (Feature)** ⭐ |
-| **PCV** | Packed Cell Volume | Kullanılmıyor |
-| **MCV** | Mean Corpuscular Volume (fL) | **Özellik (Feature)** |
-| **MCH** | Mean Corpuscular Hemoglobin (pg) | **Özellik (Feature)** |
-| **MCHC** | Mean Corpuscular Hb Concentration (g/dL) | **Özellik (Feature)** |
-| **Decision_Class** | Anemi etiketi (0/1) | ❌ **Kullanılmıyor** |
-
-> **Önemli:** `Decision_Class` sütunu veri setinde mevcut ama bu projede **kullanılmamaktadır**. Anemi kararı, tahmin edilen Hemoglobin değerine ve cinsiyete göre klinik kuralla verilir.
+| `train.py` | Veriyi yükler, Linear Regression modeli eğitir, model kaydeder |
+| `predict.py` | Konsoldan girdi alır, Hb tahmin eder, anemi durumunu belirler |
+| `utils.py` | `anemia_decision()` fonksiyonu - WHO kural tabanlı karar |
+| `app.py` | Streamlit web arayüzü - modern tasarım, interaktif kullanım |
 
 ---
 
-## 📈 Model Performansı
+## 🔬 Teknik Detaylar
 
-| Metrik | Değer | Açıklama |
-|--------|-------|----------|
-| **MAE** | 0.47 g/dL | Ortalama mutlak hata |
-| **RMSE** | ~0.55 g/dL | Kök ortalama kare hata |
-| **R²** | **0.79** | Belirleme katsayısı (%79 açıklama gücü) |
+### Model Özellikleri
 
-> 💡 **RBC (Kırmızı Kan Hücresi)** özelliğinin eklenmesi model performansını önemli ölçüde artırmıştır!
+| Parametre | Değer |
+|-----------|-------|
+| **Algoritma** | Linear Regression (sklearn) |
+| **Özellikler** | RBC, MCV, MCH, MCHC |
+| **Hedef** | Hb (Hemoglobin) |
+| **Train/Test Oranı** | 80% / 20% |
+| **Random State** | 42 |
+| **Ölçeklendirme** | Yok (StandardScaler kullanılmıyor) |
+| **Kaydetme Formatı** | joblib (.pkl) |
 
----
+### Klinik Karar Kuralları (WHO Standartları)
 
-## 🏗️ Proje Mimarisi
+| Cinsiyet | Eşik Değeri | Karar |
+|----------|-------------|-------|
+| Erkek (m/male) | Hb < 13 g/dL | **Anemia** |
+| Erkek (m/male) | Hb ≥ 13 g/dL | Normal |
+| Kadın (f/female) | Hb < 12 g/dL | **Anemia** |
+| Kadın (f/female) | Hb ≥ 12 g/dL | Normal |
+
+### Sistem Mimarisi
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -100,7 +218,6 @@ Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek i�
 │                      │                                     │   │
 │                      │  Erkek (m):  Hb < 13 g/dL → Anemi   │   │
 │                      │  Kadın (f):  Hb < 12 g/dL → Anemi   │   │
-│                      │  Aksi halde          → Normal       │   │
 │                      └─────────────────────────────────────┘   │
 │                                                     │           │
 │                                                     ▼           │
@@ -113,161 +230,31 @@ Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek i�
 
 ---
 
-## 📁 Proje Yapısı
+## 📊 Veri Seti
 
-```
-Kansizlik_Tanisinda_Regresyon/
-│
-├── 📂 data/
-│   └── 📊 anemia_new.csv          # Veri seti (1000 kayıt)
-│
-├── 📂 model/
-│   └── 🤖 hemoglobin_model.pkl    # Eğitilmiş model (joblib)
-│
-├── 🐍 train.py                    # Model eğitim scripti
-├── 🐍 predict.py                  # Tahmin ve anemi tespiti scripti
-├── 🐍 utils.py                    # Klinik karar fonksiyonları
-│
-└── 📄 README.md                   # Bu dosya
-```
-
-### Dosya Sorumlulukları
-
-| Dosya | Görev |
+| Bilgi | Değer |
 |-------|-------|
-| **train.py** | Veriyi yükler, Linear Regression modeli eğitir, model kaydeder |
-| **predict.py** | Modeli yükler, kullanıcıdan girdi alır, Hb tahmin eder, anemi durumunu belirler |
-| **utils.py** | `anemia_decision(predicted_hb, gender)` fonksiyonu - klinik kural tabanlı karar |
+| **Kaynak** | Anemia Dataset (Kaggle) |
+| **Format** | CSV |
+| **Dosya** | `data/anemia_new.csv` |
+| **Toplam Kayıt** | 1000 hasta |
+| **Sütun Sayısı** | 9 |
 
----
+### Veri Seti Sütunları
 
-## 🛠 Kurulum
+| Sütun | Açıklama | Kullanım |
+|-------|----------|----------|
+| **Gender** | Cinsiyet (m: Erkek, f: Kadın) | Sadece klinik karar için |
+| **Age** | Yaş | Kullanılmıyor |
+| **Hb** | Hemoglobin miktarı (g/dL) | **Hedef (Target)** |
+| **RBC** | Kırmızı kan hücresi sayısı | **Özellik (Feature)** ⭐ |
+| **PCV** | Packed Cell Volume | Kullanılmıyor |
+| **MCV** | Mean Corpuscular Volume (fL) | **Özellik (Feature)** |
+| **MCH** | Mean Corpuscular Hemoglobin (pg) | **Özellik (Feature)** |
+| **MCHC** | Mean Corpuscular Hb Concentration | **Özellik (Feature)** |
+| **Decision_Class** | Anemi etiketi (0/1) | ❌ Kullanılmıyor |
 
-### Gereksinimler
-
-- Python 3.8 veya üzeri
-- pip paket yöneticisi
-
-### Bağımlılıkları Yükleme
-
-```bash
-pip install pandas numpy scikit-learn joblib
-```
-
----
-
-## 🚀 Kullanım
-
-### 1. Modeli Eğitme
-
-```bash
-cd Kansizlik_Tanisinda_Regresyon
-python train.py
-```
-
-**Beklenen Çıktı:**
-```
-============================================================
-  HEMOGLOBIN REGRESSION MODEL TRAINING
-============================================================
-
-Dataset loaded: 1000 rows
-Data validation passed.
-No missing values found.
-Features: ['RBC', 'MCV', 'MCH', 'MCHC']
-Target: Hb
-
-Training set: 800 samples
-Test set: 200 samples
-
-Training Linear Regression model...
-Training complete.
-
-------------------------------------------------------------
-  MODEL PERFORMANCE (Test Set)
-------------------------------------------------------------
-  MAE:  0.4724 g/dL
-  RMSE: 0.5512 g/dL
-  R2:   0.7888
-------------------------------------------------------------
-
-Model saved: model\hemoglobin_model.pkl
-
-Training completed successfully!
-To make predictions, run: python predict.py
-```
-
-### 2. Tahmin Yapma
-
-```bash
-python predict.py
-```
-
-**Örnek Kullanım:**
-```
-============================================================
-  HEMOGLOBIN PREDICTION & ANEMIA DIAGNOSIS
-============================================================
-
-Enter blood parameters:
-
-  RBC (million cells/mcL): 4.5
-  MCV (fL): 80
-  MCH (pg): 27
-  MCHC (g/dL): 33
-
-  Gender (m/f or male/female): f
-
-------------------------------------------------------------
-  RESULTS
-------------------------------------------------------------
-  Predicted Hemoglobin: 11.93 g/dL
-  Gender: female
-  Threshold: 12.0 g/dL
-
-  Anemia Status: ** Anemia **
-  (Hemoglobin is below 12.0 g/dL for female)
-------------------------------------------------------------
-```
-
----
-
-## 🔬 Teknik Detaylar
-
-### Model Özellikleri
-
-| Parametre | Değer |
-|-----------|-------|
-| **Algoritma** | Linear Regression (sklearn) |
-| **Özellikler** | RBC, MCV, MCH, MCHC |
-| **Hedef** | Hb (Hemoglobin) |
-| **Train/Test Oranı** | 80% / 20% |
-| **Random State** | 42 |
-| **Ölçeklendirme** | Yok (StandardScaler kullanılmıyor) |
-| **Kaydetme Formatı** | joblib (.pkl) |
-
-### Regresyon Metrikleri
-
-| Metrik | Açıklama |
-|--------|----------|
-| **MAE** | Mean Absolute Error - Ortalama mutlak hata |
-| **RMSE** | Root Mean Squared Error - Kök ortalama kare hata |
-| **R²** | Coefficient of Determination - Belirleme katsayısı |
-
-### Klinik Karar Kuralları (WHO Standartları)
-
-| Cinsiyet | Eşik Değeri | Karar |
-|----------|-------------|-------|
-| Erkek (m/male) | Hb < 13 g/dL | Anemia |
-| Erkek (m/male) | Hb ≥ 13 g/dL | Normal |
-| Kadın (f/female) | Hb < 12 g/dL | Anemia |
-| Kadın (f/female) | Hb ≥ 12 g/dL | Normal |
-
----
-
-## 📈 Girdi Değer Aralıkları
-
-`predict.py` aşağıdaki aralıklar için uyarı verir:
+### Girdi Değer Aralıkları
 
 | Parametre | Normal Aralık | Birim |
 |-----------|---------------|-------|
@@ -278,66 +265,100 @@ Enter blood parameters:
 
 ---
 
-## ⚠️ Önemli Uyarılar
+## 📈 Model Performansı
 
-> **1. Klinik Kullanım Hakkında**
-> 
-> Bu proje **eğitim amaçlıdır** ve gerçek klinik ortamda tek başına kullanılmamalıdır. Anemi tanısı:
-> - Kapsamlı laboratuvar testleri
-> - Fiziksel muayene
-> - Hasta öyküsü
-> - Uzman hekim değerlendirmesi
-> 
-> gerektirmektedir.
+| Metrik | Değer | Açıklama |
+|--------|-------|----------|
+| **MAE** | 0.47 g/dL | Ortalama mutlak hata |
+| **RMSE** | ~0.55 g/dL | Kök ortalama kare hata |
+| **R²** | **0.79** | Belirleme katsayısı (%79 açıklama gücü) |
 
-> **2. Tasarım Kısıtlamaları**
-> 
-> - Bu projede **sınıflandırıcı kullanılmamaktadır** (Decision Tree, Logistic Regression vb. yok)
-> - Accuracy, confusion matrix, precision, recall gibi **sınıflandırma metrikleri kullanılmamaktadır**
-> - Veri setindeki `Decision_Class` sütunu **kullanılmamaktadır**
+> 💡 **RBC (Kırmızı Kan Hücresi)** özelliğinin eklenmesi model performansını önemli ölçüde artırmıştır!
 
 ---
 
-## 🔄 Proje Akışı
+## 🖼 Ekran Görüntüleri
+
+### Streamlit Web Arayüzü
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                      VERİ AKIŞI                              │
-├──────────────────────────────────────────────────────────────┤
-│                                                              │
-│  1️⃣  train.py                                                │
-│      │                                                       │
-│      ├── data/anemia_new.csv yükle                           │
-│      ├── Eksik veri kontrolü                                 │
-│      ├── X = [RBC, MCV, MCH, MCHC], y = Hb                   │
-│      ├── Train/Test split (80/20)                            │
-│      ├── LinearRegression().fit(X_train, y_train)            │
-│      ├── MAE, RMSE, R² hesapla                               │
-│      └── model/hemoglobin_model.pkl kaydet                   │
-│                                                              │
-│  2️⃣  predict.py                                              │
-│      │                                                       │
-│      ├── model/hemoglobin_model.pkl yükle                    │
-│      ├── Kullanıcıdan RBC, MCV, MCH, MCHC, gender al         │
-│      ├── model.predict([RBC, MCV, MCH, MCHC]) → predicted_hb │
-│      ├── anemia_decision(predicted_hb, gender) çağır         │
-│      └── Sonucu ekrana yazdır                                │
-│                                                              │
-│  3️⃣  utils.py                                                │
-│      │                                                       │
-│      └── anemia_decision(predicted_hb, gender):              │
-│          • male (m) & Hb < 13  → "Anemia"                    │
-│          • female (f) & Hb < 12 → "Anemia"                   │
-│          • else                → "Normal"                    │
-│                                                              │
-└──────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│  🌈 Animated Gradient Background                                │
+│  ╔═══════════════════════════════════════════════════════════╗  │
+│  ║  Hemoglobin Prediction & Anemia Diagnosis                 ║  │
+│  ║  ─────────────────────────────────────────────────────    ║  │
+│  ║                                                           ║  │
+│  ║  Enter Blood Parameters                                   ║  │
+│  ║  ┌─────────────┐ ┌─────────────┐                          ║  │
+│  ║  │ RBC: 4.5    │ │ MCH: 27     │                          ║  │
+│  ║  │ MCV: 80     │ │ MCHC: 33    │                          ║  │
+│  ║  └─────────────┘ └─────────────┘                          ║  │
+│  ║                                                           ║  │
+│  ║  Patient Information                                      ║  │
+│  ║  ┌───────────────┐ ┌───────────────┐                      ║  │
+│  ║  │  👩 Female    │ │  👨 Male      │                      ║  │
+│  ║  └───────────────┘ └───────────────┘                      ║  │
+│  ║                                                           ║  │
+│  ║  [🔬 Predict Hemoglobin]                                  ║  │
+│  ║                                                           ║  │
+│  ║  ─────────────────────────────────────────────────────    ║  │
+│  ║  Results                                                  ║  │
+│  ║  Predicted Hemoglobin: 11.93 g/dL                         ║  │
+│  ║  Confidence: 85%                                          ║  │
+│  ║                                                           ║  │
+│  ║  ⚠️ Result: Anemia                                        ║  │
+│  ╚═══════════════════════════════════════════════════════════╝  │
+└─────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## ⚠️ Önemli Uyarılar
+
+### 🏥 Klinik Kullanım Hakkında
+
+> **Bu proje eğitim amaçlıdır** ve gerçek klinik ortamda tek başına kullanılmamalıdır.
+
+Anemi tanısı şunları gerektirir:
+- Kapsamlı laboratuvar testleri
+- Fiziksel muayene
+- Hasta öyküsü
+- Uzman hekim değerlendirmesi
+
+### 📋 Tasarım Kısıtlamaları
+
+- Bu projede **sınıflandırıcı kullanılmamaktadır** (Decision Tree, Logistic Regression vb. yok)
+- Accuracy, confusion matrix, precision, recall gibi **sınıflandırma metrikleri kullanılmamaktadır**
+- Veri setindeki `Decision_Class` sütunu **kullanılmamaktadır**
+
+---
+
+## 🔄 Hızlı Başlangıç (Quick Start)
+
+PowerShell'de aşağıdaki komutları sırayla çalıştırın:
+
+```powershell
+# 1. Proje dizinine git
+cd C:\Kansizlik_Tanisinda_Regresyon
+
+# 2. Bağımlılıkları yükle
+pip install pandas numpy scikit-learn joblib streamlit openpyxl
+
+# 3. Modeli eğit
+python train.py
+
+# 4. Web arayüzünü başlat
+streamlit run app.py
+```
+
+Tarayıcıda açılan **http://localhost:8501** adresinden uygulamayı kullanabilirsiniz.
 
 ---
 
 ## 📚 Kaynaklar
 
 - [Scikit-learn Linear Regression Documentation](https://scikit-learn.org/stable/modules/linear_model.html)
+- [Streamlit Documentation](https://docs.streamlit.io/)
 - [WHO Hemoglobin Thresholds for Anemia](https://www.who.int/vmnis/indicators/haemoglobin.pdf)
 
 ---
