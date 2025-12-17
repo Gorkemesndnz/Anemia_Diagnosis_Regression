@@ -1,11 +1,11 @@
 """
-Hemoglobin Prediction & Anemia Diagnosis - Streamlit UI
+Hemoglobin Tahmini & Kansızlık Teşhisi - Streamlit Arayüzü
 
-This is a simple web interface for the anemia diagnosis system.
-It uses the trained Linear Regression model to predict Hemoglobin
-and applies WHO clinical thresholds to determine anemia status.
+Bu, kansızlık teşhis sistemi için basit bir web arayüzüdür.
+Eğitilmiş Lineer Regresyon modelini kullanarak Hemoglobin değerini tahmin eder
+ve DSÖ klinik eşiklerini uygulayarak kansızlık durumunu belirler.
 
-Usage:
+Kullanım:
     streamlit run app.py
 """
 
@@ -212,7 +212,7 @@ def check_range(name, value, valid_range):
     """Check if value is within typical range, return warning message if not."""
     min_val, max_val = valid_range
     if value < min_val or value > max_val:
-        return f"⚠️ {name} = {value} is outside typical range ({min_val} - {max_val})"
+        return f"⚠️ {name} = {value} tipik aralığın dışında ({min_val} - {max_val})"
     return None
 
 
@@ -316,7 +316,7 @@ def calculate_uncertainty(similar_samples, predicted_hb, total_samples):
 def main():
     # Page configuration
     st.set_page_config(
-        page_title="Anemia Diagnosis System",
+        page_title="Kansızlık Teşhis Sistemi",
         page_icon="🩸",
         layout="centered"
     )
@@ -325,7 +325,7 @@ def main():
     apply_custom_style()
     
     # Header
-    st.title("Hemoglobin Prediction & Anemia Diagnosis")
+    st.title("Hemoglobin Tahmini & Kansızlık Teşhisi")
     st.markdown("---")
     
     # Load model and dataset
@@ -333,41 +333,41 @@ def main():
     dataset = load_dataset()
     
     if model_data is None:
-        st.error("❌ Model file not found. Please run `python train.py` first.")
+        st.error("❌ Model dosyası bulunamadı. Lütfen önce `python train.py` komutunu çalıştırın.")
         st.stop()
     
     if dataset is None:
-        st.warning("⚠️ Dataset not found. Uncertainty analysis will be unavailable.")
+        st.warning("⚠️ Veri seti bulunamadı. Belirsizlik analizi kullanılamayacak.")
     
     # Model info
-    with st.expander("About this system"):
+    with st.expander("Bu sistem hakkında"):
         st.markdown("""
-        This system uses **Linear Regression** to predict Hemoglobin (Hb) values
-        from blood parameters, then applies **WHO clinical thresholds** to determine
-        anemia status.
+        Bu sistem, kan parametrelerinden Hemoglobin (Hb) değerlerini tahmin etmek için
+        **Lineer Regresyon** kullanır, ardından kansızlık durumunu belirlemek için
+        **DSÖ klinik eşiklerini** uygular.
         
-        **Anemia Thresholds (WHO):**
-        - Male: Hb < 13 g/dL → Anemia
-        - Female: Hb < 12 g/dL → Anemia
+        **Kansızlık Eşikleri (DSÖ):**
+        - Erkek: Hb < 13 g/dL → Kansızlık
+        - Kadın: Hb < 12 g/dL → Kansızlık
         
-        **Prediction Uncertainty:**
-        The system compares your input with similar individuals in the dataset
-        to provide a typical deviation range.
+        **Tahmin Belirsizliği:**
+        Sistem, tipik bir sapma aralığı sağlamak için girdinizi veri setindeki
+        benzer bireylerle karşılaştırır.
         """)
     
-    st.markdown("### Enter Blood Parameters")
+    st.markdown("### Kan Parametrelerini Girin")
     
     # Input fields in two columns
     col1, col2 = st.columns(2)
     
     with col1:
         rbc = st.number_input(
-            "RBC (million cells/mcL)",
+            "RBC (milyon hücre/mcL)",
             min_value=0.0,
             max_value=10.0,
             value=4.5,
             step=0.1,
-            help="Red Blood Cell count. Typical range: 2.0 - 7.0"
+            help="Kırmızı Kan Hücresi sayısı. Tipik aralık: 2.0 - 7.0"
         )
         
         mcv = st.number_input(
@@ -376,7 +376,7 @@ def main():
             max_value=150.0,
             value=80.0,
             step=1.0,
-            help="Mean Corpuscular Volume. Typical range: 60 - 120"
+            help="Ortalama Alyuvar Hacmi. Tipik aralık: 60 - 120"
         )
     
     with col2:
@@ -386,7 +386,7 @@ def main():
             max_value=50.0,
             value=27.0,
             step=0.5,
-            help="Mean Corpuscular Hemoglobin. Typical range: 15 - 40"
+            help="Ortalama Alyuvar Hemoglobini. Tipik aralık: 15 - 40"
         )
         
         mchc = st.number_input(
@@ -395,11 +395,11 @@ def main():
             max_value=50.0,
             value=33.0,
             step=0.5,
-            help="Mean Corpuscular Hb Concentration. Typical range: 25 - 40"
+            help="Ortalama Alyuvar Hb Konsantrasyonu. Tipik aralık: 25 - 40"
         )
     
     # Gender selection with stylish buttons
-    st.markdown("### Patient Information")
+    st.markdown("### Hasta Bilgileri")
     
     # Initialize session state for gender if not exists
     if 'selected_gender' not in st.session_state:
@@ -450,7 +450,7 @@ def main():
     with gender_col1:
         female_selected = st.session_state.selected_gender == "female"
         if st.button(
-            "👩 Female",
+            "👩 Kadın",
             key="female_btn",
             use_container_width=True,
             type="primary" if female_selected else "secondary"
@@ -461,7 +461,7 @@ def main():
     with gender_col2:
         male_selected = st.session_state.selected_gender == "male"
         if st.button(
-            "👨 Male", 
+            "👨 Erkek", 
             key="male_btn",
             use_container_width=True,
             type="primary" if male_selected else "secondary"
@@ -472,12 +472,13 @@ def main():
     gender = st.session_state.selected_gender
     
     # Show selected gender
-    st.markdown(f"<p style='text-align: center; color: rgba(255,255,255,0.7);'>Selected: <strong>{gender.capitalize()}</strong></p>", unsafe_allow_html=True)
+    gender_display = "Kadın" if gender == "female" else "Erkek"
+    st.markdown(f"<p style='text-align: center; color: rgba(255,255,255,0.7);'>Seçilen: <strong>{gender_display}</strong></p>", unsafe_allow_html=True)
     
     st.markdown("---")
     
     # Predict button
-    if st.button("🔬 Predict Hemoglobin", type="primary", use_container_width=True):
+    if st.button("🔬 Hemoglobin Tahmin Et", type="primary", use_container_width=True):
         
         # Show range warnings
         warnings = []
@@ -515,18 +516,18 @@ def main():
         
         # Display results
         st.markdown("---")
-        st.markdown("### 📊 Results")
+        st.markdown("### 📊 Sonuçlar")
         
         # Main prediction result
-        st.markdown(f"**Predicted Hemoglobin: {predicted_hb:.2f} g/dL**")
+        st.markdown(f"**Tahmini Hemoglobin: {predicted_hb:.2f} g/dL**")
         
         # Uncertainty information with percentages
         if uncertainty:
             st.markdown(
-                f"*Based on {uncertainty['n_samples']} similar individuals in the dataset*"
+                f"*Veri setindeki {uncertainty['n_samples']} benzer bireye dayanmaktadır*"
             )
             st.markdown(
-                f"*Typical deviation: ±{uncertainty['typical_deviation']:.2f} g/dL*"
+                f"*Tipik sapma: ±{uncertainty['typical_deviation']:.2f} g/dL*"
             )
         
         st.markdown("")
@@ -540,100 +541,103 @@ def main():
         
         with result_col1:
             st.metric(
-                label="Predicted Hb",
+                label="Tahmini Hb",
                 value=f"{predicted_hb:.2f} g/dL"
             )
         
         with result_col2:
+            gender_display = "kadın" if gender == "female" else "erkek"
             st.metric(
-                label="Threshold",
+                label="Eşik Değer",
                 value=f"{threshold:.1f} g/dL",
-                help=f"WHO threshold for {gender}"
+                help=f"DSÖ {gender_display} eşiği"
             )
         
         with result_col3:
             st.metric(
-                label="Gender",
-                value=gender.capitalize()
+                label="Cinsiyet",
+                value="Kadın" if gender == "female" else "Erkek"
             )
         
         if result_col4 and uncertainty:
             with result_col4:
                 st.metric(
-                    label="Confidence",
+                    label="Güven",
                     value=f"{uncertainty['confidence_pct']:.0f}%",
-                    help="Based on similarity to known cases"
+                    help="Bilinen vakalara benzerliğe dayanmaktadır"
                 )
         
         # Percentage metrics display
         if uncertainty:
             st.markdown("")
-            st.markdown("#### 📊 Similarity Analysis")
+            st.markdown("#### 📊 Benzerlik Analizi")
             
             pct_col1, pct_col2, pct_col3 = st.columns(3)
             
             with pct_col1:
                 st.metric(
-                    label="Within ±1 g/dL",
+                    label="±1 g/dL İçinde",
                     value=f"{uncertainty['within_1_pct']:.0f}%",
-                    help="Percentage of similar cases within 1 g/dL of prediction"
+                    help="Tahminin 1 g/dL içindeki benzer vakaların yüzdesi"
                 )
             
             with pct_col2:
                 st.metric(
-                    label="Within ±2 g/dL",
+                    label="±2 g/dL İçinde",
                     value=f"{uncertainty['within_2_pct']:.0f}%",
-                    help="Percentage of similar cases within 2 g/dL of prediction"
+                    help="Tahminin 2 g/dL içindeki benzer vakaların yüzdesi"
                 )
             
             with pct_col3:
                 st.metric(
-                    label="Match Rate",
+                    label="Eşleşme Oranı",
                     value=f"{(uncertainty['n_samples'] / uncertainty['total_samples'] * 100):.1f}%",
-                    help=f"{uncertainty['n_samples']} of {uncertainty['total_samples']} samples"
+                    help=f"{uncertainty['total_samples']} örnekten {uncertainty['n_samples']} tanesi"
                 )
         
         # Uncertainty details (expandable)
         if uncertainty:
-            with st.expander("📈 Prediction Uncertainty Details"):
+            with st.expander("📈 Tahmin Belirsizliği Detayları"):
                 st.markdown("""
-                **How is uncertainty calculated?**
+                **Belirsizlik nasıl hesaplanır?**
                 
-                We find similar individuals in our dataset based on their blood parameters
-                (RBC, MCV, MCH, MCHC) and analyze the variation in their actual Hemoglobin values.
+                Veri setimizdeki kan parametrelerine (RBC, MCV, MCH, MCHC) göre
+                benzer bireyleri bulur ve gerçek Hemoglobin değerlerindeki
+                varyasyonu analiz ederiz.
                 """)
                 
                 unc_col1, unc_col2 = st.columns(2)
                 
                 with unc_col1:
-                    st.markdown(f"**Similar samples:** {uncertainty['n_samples']}")
-                    st.markdown(f"**Mean Hb in group:** {uncertainty['mean_hb']:.2f} g/dL")
-                    st.markdown(f"**Standard deviation:** ±{uncertainty['std_hb']:.2f} g/dL")
+                    st.markdown(f"**Benzer örnekler:** {uncertainty['n_samples']}")
+                    st.markdown(f"**Gruptaki ortalama Hb:** {uncertainty['mean_hb']:.2f} g/dL")
+                    st.markdown(f"**Standart sapma:** ±{uncertainty['std_hb']:.2f} g/dL")
                 
                 with unc_col2:
-                    st.markdown(f"**Hb range in group:** {uncertainty['min_hb']:.1f} - {uncertainty['max_hb']:.1f} g/dL")
-                    st.markdown(f"**Prediction vs. group MAE:** {uncertainty['mae']:.2f} g/dL")
+                    st.markdown(f"**Gruptaki Hb aralığı:** {uncertainty['min_hb']:.1f} - {uncertainty['max_hb']:.1f} g/dL")
+                    st.markdown(f"**Tahmin vs. grup MAE:** {uncertainty['mae']:.2f} g/dL")
                 
-                st.caption("*Deviation is calculated using similar cases in the dataset.*")
+                st.caption("*Sapma, veri setindeki benzer vakalar kullanılarak hesaplanmıştır.*")
         
         # Anemia status with appropriate styling
         st.markdown("---")
         
+        gender_display = "kadın" if gender == "female" else "erkek"
         if status == "Anemia":
-            st.error(f"### ⚠️ Result: **{status}**")
-            st.markdown(f"Predicted Hemoglobin ({predicted_hb:.2f} g/dL) is below the threshold ({threshold:.1f} g/dL) for {gender}.")
+            st.error(f"### ⚠️ Sonuç: **Kansızlık**")
+            st.markdown(f"Tahmini Hemoglobin ({predicted_hb:.2f} g/dL), {gender_display} için eşik değerin ({threshold:.1f} g/dL) altındadır.")
         else:
-            st.success(f"### ✅ Result: **{status}**")
-            st.markdown(f"Predicted Hemoglobin ({predicted_hb:.2f} g/dL) is at or above the threshold ({threshold:.1f} g/dL) for {gender}.")
+            st.success(f"### ✅ Sonuç: **Kansızlık Yok**")
+            st.markdown(f"Tahmini Hemoglobin ({predicted_hb:.2f} g/dL), {gender_display} için eşik değer ({threshold:.1f} g/dL) veya üzerindedir.")
         
         # Clinical note
-        st.info("💡 **Note:** This is a decision support tool for educational purposes. Clinical diagnosis requires comprehensive evaluation by healthcare professionals.")
+        st.info("💡 **Not:** Bu, eğitim amaçlı bir karar destek aracıdır. Klinik teşhis, sağlık uzmanları tarafından kapsamlı bir değerlendirme gerektirir.")
     
     # Footer
     st.markdown("---")
     st.markdown(
         "<div style='text-align: center; color: gray; font-size: 12px;'>"
-        "Hemoglobin Regression Model | Linear Regression | WHO Thresholds"
+        "Hemoglobin Regresyon Modeli | Lineer Regresyon | DSÖ Eşikleri"
         "</div>",
         unsafe_allow_html=True
     )
