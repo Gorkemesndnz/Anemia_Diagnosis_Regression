@@ -623,7 +623,7 @@ def main():
         st.markdown("---")
         
         gender_display = "kadın" if gender == "female" else "erkek"
-        if status == "Anemia":
+        if status == "Kansızlık":
             st.error(f"### ⚠️ Sonuç: **Kansızlık**")
             st.markdown(f"Tahmini Hemoglobin ({predicted_hb:.2f} g/dL), {gender_display} için eşik değerin ({threshold:.1f} g/dL) altındadır.")
         else:

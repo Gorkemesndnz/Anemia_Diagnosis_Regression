@@ -59,7 +59,7 @@ def anemia_decision(predicted_hb, gender):
     
     # Apply clinical decision rule
     if predicted_hb < threshold:
-        return "Anemia"
+        return "Kansızlık"
     else:
         return "Normal"
 
