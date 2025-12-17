@@ -72,44 +72,229 @@ Bu proje, kan tahlili verilerinden **Hemoglobin (Hb)** değerini tahmin etmek i�
 
 ## 🛠 Kurulum
 
-### Gereksinimler
+Bu bölüm, projeyi sıfırdan kurmak için gereken tüm adımları detaylı şekilde açıklamaktadır.
 
-- **Python:** 3.8 veya üzeri
-- **İşletim Sistemi:** Windows 10/11 (PowerShell)
-- **RAM:** Minimum 4 GB
+### 📋 Gereksinimler
 
-### Adım 1: Projeyi İndirin
+| Gereksinim | Minimum | Önerilen |
+|------------|---------|----------|
+| **Python** | 3.8 | 3.10+ |
+| **pip** | 21.0 | En son sürüm |
+| **İşletim Sistemi** | Windows 10 | Windows 11 |
+| **RAM** | 4 GB | 8 GB |
+| **Disk Alanı** | 500 MB | 1 GB |
+
+---
+
+### 📥 Adım 1: Projeyi İndirin
+
+#### Yöntem A: Git ile Klonlama (Önerilen)
 
 ```powershell
-# Git ile klonlama (eğer Git kuruluysa)
-git clone <repository-url>
-cd Kansizlik_Tanisinda_Regresyon
+# Git kurulu değilse: https://git-scm.com/download/win adresinden indirin
 
-# Veya ZIP dosyasını indirip çıkarın
+# Projeyi klonlayın
+git clone https://github.com/Gorkemesndnz/Anemia_Diagnosis_Regression.git
+
+# Proje dizinine gidin
+cd Anemia_Diagnosis_Regression
 ```
 
-### Adım 2: Python Bağımlılıklarını Yükleyin
+#### Yöntem B: ZIP Dosyası İndirme
 
-PowerShell'i **Yönetici olarak** açın ve aşağıdaki komutları çalıştırın:
+1. GitHub sayfasında yeşil **"Code"** butonuna tıklayın
+2. **"Download ZIP"** seçeneğini seçin
+3. İndirilen ZIP dosyasını **C:\** dizinine çıkarın
+4. Klasör adını `Kansizlik_Tanisinda_Regresyon` olarak değiştirin
+
+---
+
+### 🐍 Adım 2: Python Kurulumunu Kontrol Edin
+
+PowerShell'i açın ve Python'un kurulu olduğunu doğrulayın:
+
+```powershell
+# Python sürümünü kontrol edin
+python --version
+```
+
+**Beklenen Çıktı:** `Python 3.8.x` veya üzeri
+
+> ⚠️ **Python kurulu değilse:**  
+> 1. https://www.python.org/downloads/ adresine gidin  
+> 2. "Download Python 3.x.x" butonuna tıklayın  
+> 3. Kurulum sırasında **"Add Python to PATH"** seçeneğini işaretleyin ✅  
+> 4. Kurulumu tamamlayın ve PowerShell'i yeniden başlatın
+
+---
+
+### ⬆️ Adım 3: pip'i Güncelleyin (Önemli!)
+
+Eski pip sürümleri paket yükleme hatalarına neden olabilir. Mutlaka güncelleyin:
+
+```powershell
+# pip'i en son sürüme güncelleyin
+python -m pip install --upgrade pip
+
+# Güncellemeyi doğrulayın
+pip --version
+```
+
+**Beklenen Çıktı:** `pip 23.x.x` veya üzeri
+
+---
+
+### 🗂️ Adım 4: Sanal Ortam Oluşturun (Önerilen)
+
+Sanal ortam, proje bağımlılıklarını sistemdeki diğer Python projelerinden izole eder:
 
 ```powershell
 # Proje dizinine gidin
 cd C:\Kansizlik_Tanisinda_Regresyon
 
-# Gerekli paketleri yükleyin
+# Sanal ortam oluşturun
+python -m venv venv
+
+# Sanal ortamı etkinleştirin (Windows PowerShell)
+.\venv\Scripts\Activate.ps1
+```
+
+> 💡 **Not:** Sanal ortam aktifken PowerShell'de `(venv)` öneki görünür.
+
+> ⚠️ **PowerShell Yetki Hatası Alırsanız:**
+> ```powershell
+> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+> ```
+> Komutu çalıştırın ve tekrar deneyin.
+
+---
+
+### 📦 Adım 5: Bağımlılıkları Yükleyin
+
+#### Yöntem A: requirements.txt ile (Önerilen)
+
+```powershell
+# Tüm bağımlılıkları tek seferde yükleyin
+pip install -r requirements.txt
+```
+
+#### Yöntem B: Manuel Kurulum
+
+```powershell
+# Her paketi tek tek yükleyin
+pip install pandas>=1.3.0
+pip install numpy>=1.20.0
+pip install scikit-learn>=1.0.0
+pip install joblib>=1.0.0
+pip install streamlit>=1.0.0
+pip install openpyxl>=3.0.0
+```
+
+#### Yöntem C: Tek Satırda Kurulum
+
+```powershell
 pip install pandas numpy scikit-learn joblib streamlit openpyxl
 ```
 
-### Tüm Bağımlılıklar
+---
 
-| Paket | Sürüm | Açıklama |
-|-------|-------|----------|
-| `pandas` | ≥1.3.0 | Veri işleme |
-| `numpy` | ≥1.20.0 | Sayısal hesaplamalar |
-| `scikit-learn` | ≥1.0.0 | Machine Learning |
-| `joblib` | ≥1.0.0 | Model kaydetme/yükleme |
-| `streamlit` | ≥1.0.0 | Web arayüzü |
-| `openpyxl` | ≥3.0.0 | Excel dosyası okuma |
+### ✅ Adım 6: Kurulumu Doğrulayın
+
+Tüm paketlerin doğru yüklendiğini kontrol edin:
+
+```powershell
+# Yüklü paketleri listeleyin
+pip list
+
+# Veya belirli paketleri kontrol edin
+python -c "import pandas; import numpy; import sklearn; import streamlit; print('Tüm paketler başarıyla yüklendi!')"
+```
+
+---
+
+### 📊 Bağımlılık Tablosu
+
+| Paket | Minimum Sürüm | Açıklama | Kurulum Komutu |
+|-------|---------------|----------|----------------|
+| `pandas` | 1.3.0 | Veri işleme ve DataFrame | `pip install pandas` |
+| `numpy` | 1.20.0 | Sayısal hesaplamalar | `pip install numpy` |
+| `scikit-learn` | 1.0.0 | Machine Learning algoritmaları | `pip install scikit-learn` |
+| `joblib` | 1.0.0 | Model kaydetme/yükleme | `pip install joblib` |
+| `streamlit` | 1.0.0 | Web arayüzü framework'ü | `pip install streamlit` |
+| `openpyxl` | 3.0.0 | Excel dosyası okuma | `pip install openpyxl` |
+
+---
+
+### 🔧 Sık Karşılaşılan Hatalar ve Çözümleri
+
+#### ❌ Hata 1: `'python' is not recognized`
+**Çözüm:** Python PATH'e eklenmemiş.
+```powershell
+# Python yolunu manuel ekleyin veya Python'u yeniden kurun
+# Kurulum sırasında "Add Python to PATH" seçeneğini işaretleyin
+```
+
+#### ❌ Hata 2: `pip is not recognized`
+**Çözüm:** pip kurulu değil veya PATH'te yok.
+```powershell
+# Python ile pip'i çağırın
+python -m pip install --upgrade pip
+```
+
+#### ❌ Hata 3: `Permission denied` veya `Access denied`
+**Çözüm:** PowerShell'i Yönetici olarak çalıştırın.
+```powershell
+# Başlat menüsünde PowerShell'e sağ tıklayın
+# "Yönetici olarak çalıştır" seçin
+```
+
+#### ❌ Hata 4: `ModuleNotFoundError: No module named 'xxx'`
+**Çözüm:** İlgili modül yüklenmemiş.
+```powershell
+# Eksik modülü yükleyin
+pip install <modül_adı>
+```
+
+#### ❌ Hata 5: `ERROR: Could not install packages due to an EnvironmentError`
+**Çözüm:** pip önbelleğini temizleyin ve tekrar deneyin.
+```powershell
+pip cache purge
+pip install <paket_adı> --no-cache-dir
+```
+
+#### ❌ Hata 6: Streamlit başlatılamıyor
+**Çözüm:** Önce modeli eğitin.
+```powershell
+python train.py
+streamlit run app.py
+```
+
+---
+
+### 🚀 Hızlı Kurulum Özeti
+
+Tüm adımları tek seferde çalıştırmak için:
+
+```powershell
+# 1. Proje dizinine git
+cd C:\Kansizlik_Tanisinda_Regresyon
+
+# 2. pip'i güncelle
+python -m pip install --upgrade pip
+
+# 3. Sanal ortam oluştur ve aktifleştir
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+
+# 4. Bağımlılıkları yükle
+pip install pandas numpy scikit-learn joblib streamlit openpyxl
+
+# 5. Modeli eğit
+python train.py
+
+# 6. Uygulamayı başlat
+streamlit run app.py
+```
 
 ---
 
